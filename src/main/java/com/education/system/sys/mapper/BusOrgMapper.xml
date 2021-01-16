@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.BusOrgMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.BusOrg">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+    <result column="org_address" jdbcType="VARCHAR" property="orgAddress" />
+    <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+    <result column="org_icon" jdbcType="VARCHAR" property="orgIcon" />
+    <result column="org_img" jdbcType="VARCHAR" property="orgImg" />
+    <result column="org_pid" jdbcType="INTEGER" property="orgPid" />
+    <result column="org_person" jdbcType="VARCHAR" property="orgPerson" />
+    <result column="org_stage" jdbcType="INTEGER" property="orgStage" />
+    <result column="org_phone" jdbcType="VARCHAR" property="orgPhone" />
+    <result column="org_computer" jdbcType="INTEGER" property="orgComputer" />
+    <result column="org_boss" jdbcType="VARCHAR" property="orgBoss" />
+    <result column="org_province" jdbcType="VARCHAR" property="orgProvince" />
+    <result column="org_city" jdbcType="VARCHAR" property="orgCity" />
+    <result column="org_county" jdbcType="VARCHAR" property="orgCounty" />
+    <result column="org_sort" jdbcType="INTEGER" property="orgSort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, org_name, org_address, org_code, org_icon, org_img, org_pid, org_person, org_stage, 
+    org_phone, org_computer, org_boss, org_province, org_city, org_county, org_sort, 
+    create_time
+  </sql>
+  <!-- 查询所有机构信息 -->
+  <select id="findOrgAll" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from
+  	bus_org
+  	order by org_sort
+  </select>
+  
+  <!-- 查询所有上级机构 -->
+  <select id="findOrgAllByPidNull" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from bus_org where org_pid is null order by org_sort
+	</select>
+	<!--查询机构子集  -->
+	<select id="findOrgAllByPid" resultMap="BaseResultMap" parameterType="integer">
+		select distinct
+		<include refid="Base_Column_List" />
+		from bus_org where org_pid = #{pid} order by org_sort
+	</select>
+  
+  
+  <!-- 插入数据,机构的数据
+  
+   -->
+  
+  <insert id="insert" parameterType="BusOrg">
+  	insert into bus_org 
+  	(org_name, org_address, org_code,org_icon,org_img, org_pid, org_person, org_stage,org_phone,org_computer,org_boss,org_province,org_city,org_county,org_sort,create_time)
+		values 
+		(#{orgName}, #{orgAddress}, #{orgCode},#{orgIcon},#{orgImg}, 
+		#{orgPid}, #{orgPerson},#{orgStage},#{orgPhone},#{orgComputer},
+		#{orgBoss}, #{orgProvince},#{orgCity},#{orgCounty},#{orgSort}, now()
+		)
+  	
+  </insert>
+  <!-- 根据机构id删除机构 -->
+  <delete id="deleteOrgById" parameterType="integer">
+  	delete from 
+  	bus_org
+  	where 
+  	id =#{id}
+  </delete>
+  
+  
+  <!-- 根据机构id查询机构全部信息 -->
+  <select id="findOrgById" parameterType="integer" resultMap="BaseResultMap">
+  	select
+		<include refid="Base_Column_List" />
+		from bus_org where id = #{id}
+  </select>
+  
+  <update id="updateOrg" parameterType="BusOrg" >
+  	update bus_org
+  	<set>
+  		<if test="orgName != null and orgName != ''">
+  		 org_name = #{orgName},
+  		</if>
+  		<if test="orgAddress != null and orgAddress != ''">
+				org_address = #{orgAddress},
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				org_code = #{orgCode},
+			</if>
+			<if test="orgIcon != null and orgIcon != ''">
+				org_icon = #{orgIcon},
+			</if>
+			<if test="orgImg != null and orgImg != ''">
+				org_img = #{orgImg},
+			</if>
+			org_pid = #{orgPid},
+			<if test="orgPerson != null and orgPerson != ''">
+				org_person = #{orgPerson},
+			</if>
+			<if test="orgStage != null and orgStage != ''">
+				org_stage = #{orgStage},
+			</if>
+			<if test="orgPhone != null and orgPhone != ''">
+				org_phone = #{orgPhone},
+			</if>
+			<if test="orgComputer != null and orgComputer != ''">
+				org_computer = #{orgComputer},
+			</if>
+			<if test="orgBoss != null and orgBoss != ''">
+				org_boss = #{orgBoss},
+			</if>
+			<if test="orgProvince != null and orgProvince != ''">
+				org_province = #{orgProvince},
+			</if>
+			<if test="orgCity != null and orgCity != ''">
+				org_city = #{orgCity},
+			</if>
+			<if test="orgCounty != null and orgCounty != ''">
+				org_county = #{orgCounty},
+			</if>
+			<if test="orgSort != null and orgSort != ''">
+				org_sort = #{orgSort},
+			</if>
+			<if test="createTime != null">
+				create_time = now(),
+			</if>
+  	
+  	</set>
+  	where id = #{id}
+  
+  </update>
+</mapper>

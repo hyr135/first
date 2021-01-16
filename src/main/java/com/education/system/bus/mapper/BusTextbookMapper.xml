@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.bus.mapper.BusTextbookMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.bus.entity.BusTextbook">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="textbook_name" jdbcType="VARCHAR" property="textbookName" />
+    <result column="textbook_title" jdbcType="VARCHAR" property="textbookTitle" />
+    <result column="level_id" jdbcType="INTEGER" property="levelId" />
+    <result column="textbook_img" jdbcType="VARCHAR" property="textbookImg" />
+    <result column="total_courses" jdbcType="INTEGER" property="totalCourses" />
+    <result column="semester_id" jdbcType="VARCHAR" property="semesterId" />
+    <result column="press" jdbcType="VARCHAR" property="press" />
+    <result column="textbook_price" jdbcType="DECIMAL" property="textbookPrice" />
+    <result column="program_tools" jdbcType="VARCHAR" property="programTools" />
+    <result column="textbook_state" jdbcType="INTEGER" property="textbookState" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.education.system.bus.entity.BusTextbook">
+    <result column="textbook_introduction" jdbcType="LONGVARCHAR" property="textbookIntroduction" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, textbook_name, textbook_title, level_id, textbook_img, total_courses, semester_id, 
+    press, textbook_price, program_tools, textbook_state, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    textbook_introduction
+  </sql>
+  
+  <!-- 选择查询,或者模糊查询,根据条件进行查询 -->
+  <select id="findData" parameterType="PageInfo" resultMap="ResultMapWithBLOBs">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	<include refid="Blob_Column_List"/>
+  	from bus_textbook
+  	<where>
+  		<if test="condition.textbookName != null and condition.textbookName != '' ">
+  			textbook_name = #{condition.textbookName}
+  		</if>
+  	</where>
+  	limit #{from},#{pagesize}
+  
+  </select>
+  
+  
+   <!-- 选择查询,或者模糊查询,根据条件进行查询总数 -->
+  <select id="findDataCount" parameterType="PageInfo" resultMap="ResultMapWithBLOBs">
+  	select 
+  	count(*) as total
+  	from bus_textbook
+  	<where>
+  		<if test="condition.textbookName != null and condition.textbookName != '' ">
+  			textbook_name = #{condition.textbookName}
+  		</if>
+  	</where>
+  
+  </select>
+  
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bus_textbook
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bus_textbook
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.education.system.bus.entity.BusTextbook">
+    insert into bus_textbook (id, textbook_name, textbook_title, 
+      level_id, textbook_img, total_courses, 
+      semester_id, press, textbook_price, 
+      program_tools, textbook_state, create_time, 
+      textbook_introduction)
+    values (#{id,jdbcType=INTEGER}, #{textbookName,jdbcType=VARCHAR}, #{textbookTitle,jdbcType=VARCHAR}, 
+      #{levelId,jdbcType=INTEGER}, #{textbookImg,jdbcType=VARCHAR}, #{totalCourses,jdbcType=INTEGER}, 
+      #{semesterId,jdbcType=VARCHAR}, #{press,jdbcType=VARCHAR}, #{textbookPrice,jdbcType=DECIMAL}, 
+      #{programTools,jdbcType=VARCHAR}, #{textbookState,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{textbookIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.education.system.bus.entity.BusTextbook">
+    insert into bus_textbook
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="textbookName != null">
+        textbook_name,
+      </if>
+      <if test="textbookTitle != null">
+        textbook_title,
+      </if>
+      <if test="levelId != null">
+        level_id,
+      </if>
+      <if test="textbookImg != null">
+        textbook_img,
+      </if>
+      <if test="totalCourses != null">
+        total_courses,
+      </if>
+      <if test="semesterId != null">
+        semester_id,
+      </if>
+      <if test="press != null">
+        press,
+      </if>
+      <if test="textbookPrice != null">
+        textbook_price,
+      </if>
+      <if test="programTools != null">
+        program_tools,
+      </if>
+      <if test="textbookState != null">
+        textbook_state,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="textbookIntroduction != null">
+        textbook_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="textbookName != null">
+        #{textbookName,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookTitle != null">
+        #{textbookTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="levelId != null">
+        #{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="textbookImg != null">
+        #{textbookImg,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCourses != null">
+        #{totalCourses,jdbcType=INTEGER},
+      </if>
+      <if test="semesterId != null">
+        #{semesterId,jdbcType=VARCHAR},
+      </if>
+      <if test="press != null">
+        #{press,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookPrice != null">
+        #{textbookPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="programTools != null">
+        #{programTools,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookState != null">
+        #{textbookState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="textbookIntroduction != null">
+        #{textbookIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.education.system.bus.entity.BusTextbook">
+    update bus_textbook
+    <set>
+      <if test="textbookName != null">
+        textbook_name = #{textbookName,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookTitle != null">
+        textbook_title = #{textbookTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="levelId != null">
+        level_id = #{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="textbookImg != null">
+        textbook_img = #{textbookImg,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCourses != null">
+        total_courses = #{totalCourses,jdbcType=INTEGER},
+      </if>
+      <if test="semesterId != null">
+        semester_id = #{semesterId,jdbcType=VARCHAR},
+      </if>
+      <if test="press != null">
+        press = #{press,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookPrice != null">
+        textbook_price = #{textbookPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="programTools != null">
+        program_tools = #{programTools,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookState != null">
+        textbook_state = #{textbookState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="textbookIntroduction != null">
+        textbook_introduction = #{textbookIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.education.system.bus.entity.BusTextbook">
+    update bus_textbook
+    set textbook_name = #{textbookName,jdbcType=VARCHAR},
+      textbook_title = #{textbookTitle,jdbcType=VARCHAR},
+      level_id = #{levelId,jdbcType=INTEGER},
+      textbook_img = #{textbookImg,jdbcType=VARCHAR},
+      total_courses = #{totalCourses,jdbcType=INTEGER},
+      semester_id = #{semesterId,jdbcType=VARCHAR},
+      press = #{press,jdbcType=VARCHAR},
+      textbook_price = #{textbookPrice,jdbcType=DECIMAL},
+      program_tools = #{programTools,jdbcType=VARCHAR},
+      textbook_state = #{textbookState,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      textbook_introduction = #{textbookIntroduction,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.education.system.bus.entity.BusTextbook">
+    update bus_textbook
+    set textbook_name = #{textbookName,jdbcType=VARCHAR},
+      textbook_title = #{textbookTitle,jdbcType=VARCHAR},
+      level_id = #{levelId,jdbcType=INTEGER},
+      textbook_img = #{textbookImg,jdbcType=VARCHAR},
+      total_courses = #{totalCourses,jdbcType=INTEGER},
+      semester_id = #{semesterId,jdbcType=VARCHAR},
+      press = #{press,jdbcType=VARCHAR},
+      textbook_price = #{textbookPrice,jdbcType=DECIMAL},
+      program_tools = #{programTools,jdbcType=VARCHAR},
+      textbook_state = #{textbookState,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

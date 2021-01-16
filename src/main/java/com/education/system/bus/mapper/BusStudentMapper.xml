@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.bus.mapper.BusStudentMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.bus.entity.BusStudent">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="student_no" jdbcType="VARCHAR" property="studentNo" />
+    <result column="student_name" jdbcType="VARCHAR" property="studentName" />
+    <result column="parent_phone" jdbcType="VARCHAR" property="parentPhone" />
+    <result column="student_gender" jdbcType="INTEGER" property="studentGender" />
+    <result column="teacher_birthday" jdbcType="TIMESTAMP" property="teacherBirthday" />
+    <result column="student_account" jdbcType="VARCHAR" property="studentAccount" />
+    <result column="first_login_time" jdbcType="TIMESTAMP" property="firstLoginTime" />
+    <result column="student_state" jdbcType="INTEGER" property="studentState" />
+    <result column="campus_id" jdbcType="INTEGER" property="campusId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="courses_number" jdbcType="INTEGER" property="coursesNumber" />
+    <result column="hardware_number" jdbcType="INTEGER" property="hardwareNumber" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, student_no, student_name, parent_phone, student_gender, teacher_birthday, student_account, 
+    first_login_time, student_state, campus_id, class_id, courses_number, hardware_number, 
+    user_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bus_student
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bus_student
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.education.system.bus.entity.BusStudent">
+    insert into bus_student (id, student_no, student_name, 
+      parent_phone, student_gender, teacher_birthday, 
+      student_account, first_login_time, student_state, 
+      campus_id, class_id, courses_number, 
+      hardware_number, user_id)
+    values (#{id,jdbcType=INTEGER}, #{studentNo,jdbcType=VARCHAR}, #{studentName,jdbcType=VARCHAR}, 
+      #{parentPhone,jdbcType=VARCHAR}, #{studentGender,jdbcType=INTEGER}, #{teacherBirthday,jdbcType=TIMESTAMP}, 
+      #{studentAccount,jdbcType=VARCHAR}, #{firstLoginTime,jdbcType=TIMESTAMP}, #{studentState,jdbcType=INTEGER}, 
+      #{campusId,jdbcType=INTEGER}, #{classId,jdbcType=INTEGER}, #{coursesNumber,jdbcType=INTEGER}, 
+      #{hardwareNumber,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.education.system.bus.entity.BusStudent">
+    insert into bus_student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="studentNo != null">
+        student_no,
+      </if>
+      <if test="studentName != null">
+        student_name,
+      </if>
+      <if test="parentPhone != null">
+        parent_phone,
+      </if>
+      <if test="studentGender != null">
+        student_gender,
+      </if>
+      <if test="teacherBirthday != null">
+        teacher_birthday,
+      </if>
+      <if test="studentAccount != null">
+        student_account,
+      </if>
+      <if test="firstLoginTime != null">
+        first_login_time,
+      </if>
+      <if test="studentState != null">
+        student_state,
+      </if>
+      <if test="campusId != null">
+        campus_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="coursesNumber != null">
+        courses_number,
+      </if>
+      <if test="hardwareNumber != null">
+        hardware_number,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="studentNo != null">
+        #{studentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="studentName != null">
+        #{studentName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentPhone != null">
+        #{parentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="studentGender != null">
+        #{studentGender,jdbcType=INTEGER},
+      </if>
+      <if test="teacherBirthday != null">
+        #{teacherBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="studentAccount != null">
+        #{studentAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="firstLoginTime != null">
+        #{firstLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="studentState != null">
+        #{studentState,jdbcType=INTEGER},
+      </if>
+      <if test="campusId != null">
+        #{campusId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="coursesNumber != null">
+        #{coursesNumber,jdbcType=INTEGER},
+      </if>
+      <if test="hardwareNumber != null">
+        #{hardwareNumber,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.education.system.bus.entity.BusStudent">
+    update bus_student
+    <set>
+      <if test="studentNo != null">
+        student_no = #{studentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="studentName != null">
+        student_name = #{studentName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentPhone != null">
+        parent_phone = #{parentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="studentGender != null">
+        student_gender = #{studentGender,jdbcType=INTEGER},
+      </if>
+      <if test="teacherBirthday != null">
+        teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="studentAccount != null">
+        student_account = #{studentAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="firstLoginTime != null">
+        first_login_time = #{firstLoginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="studentState != null">
+        student_state = #{studentState,jdbcType=INTEGER},
+      </if>
+      <if test="campusId != null">
+        campus_id = #{campusId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="coursesNumber != null">
+        courses_number = #{coursesNumber,jdbcType=INTEGER},
+      </if>
+      <if test="hardwareNumber != null">
+        hardware_number = #{hardwareNumber,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.education.system.bus.entity.BusStudent">
+    update bus_student
+    set student_no = #{studentNo,jdbcType=VARCHAR},
+      student_name = #{studentName,jdbcType=VARCHAR},
+      parent_phone = #{parentPhone,jdbcType=VARCHAR},
+      student_gender = #{studentGender,jdbcType=INTEGER},
+      teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
+      student_account = #{studentAccount,jdbcType=VARCHAR},
+      first_login_time = #{firstLoginTime,jdbcType=TIMESTAMP},
+      student_state = #{studentState,jdbcType=INTEGER},
+      campus_id = #{campusId,jdbcType=INTEGER},
+      class_id = #{classId,jdbcType=INTEGER},
+      courses_number = #{coursesNumber,jdbcType=INTEGER},
+      hardware_number = #{hardwareNumber,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.SysRoleMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.SysRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_description" jdbcType="VARCHAR" property="roleDescription" />
+    <result column="role_status" jdbcType="INTEGER" property="roleStatus" />
+    <result column="role_sort" jdbcType="INTEGER" property="roleSort" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, role_name, role_description, role_status, role_sort
+  </sql>
+  <!--使用联合查询，使用左连接将数据拿到，由用户表左连接角色与资源的中间表（其实没有这个中间表也是可以的只是有这个中间表
+  
+  的话在逻辑上比较好理解而且，在sql语句书写的时候指向也就更加的明确）,在将经过左连接形成之后的表进行一次左连接到
+  资源表进行查询到资源路径。
+    -->
+ <select id="findRoleResourceListByRoleId" resultType="map" parameterType="integer">
+		select 
+		*
+		from 
+		sys_role sr
+		left join sys_role_resource srr on sr.id=role_id
+		left join sys_resource sre on srr.resource_id=sre.id
+		WHERE
+		sr.id = #{id}
+ </select>
+ <!--
+ 	注释说明：
+ 			以下的sql语句是从角色表里面根据id来查询用户，因为id已经通过另一个方法查询回来的
+ 			集合id，通过循环就可以为每一个id进行查询。然后通过角色表sys_role 与中间表sys_role_resource
+ 			进行左连接（将角色表中的数据全部查出，就算是连接到的中间表中的数据没有指定该角色拥有资源，但是该
+ 			角色还是应该出现在查询结果当中，不因为角色中没有资源而查询显示不到。），在通过中间表之后在进行一次与资源的
+ 			左连接将sys_resource中数据拿出。
+   -->
+ <select id="findResourceIdListByRoleIdAndType" parameterType="integer" resultType="com.education.system.sys.entity.SysResource">
+ 	select *from 
+	sys_role  sr left join sys_role_resource srr on sr.id = srr.role_id
+	left join sys_resource  sre on srr.resource_id = sre.id
+	and sr.id =#{id} 
+	and sre.resource_type =1
+ </select>
+ 
+ 
+ <!-- 根据分页条件进行查询数据  ,$传入的参数在SqL中直接显示为传入的值，$方式无法防止Sql注入。-->
+ <select id="findRolePageCondition" parameterType="com.education.system.common.entity.PageInfo" resultMap="BaseResultMap">
+ 	select 
+ 	<include refid="Base_Column_List"/>
+ 	from sys_role
+ 	order by ${sort} ${order}
+	limit #{from},#{size};
+ 
+ </select>
+ <!-- 选择所有数据量. -->
+ <select id="findRolePageCount" resultType="integer" parameterType="PageInfo">
+		select
+		count(*) count
+		from sys_role
+ </select>
+ 
+ <!-- 添加角色 -->
+ <insert id="insert" parameterType="SysRole">
+ 	<!-- <selectKey order="BEFORE" resultType="integer" keyProperty="id" >
+ 		select LAST_INSERT_ID()
+ 	</selectKey> -->
+ 	insert into sys_role (role_name, role_description, role_status, role_sort)
+		values (#{roleName}, #{roleDescription}, #{roleStatus},#{roleSort})
+ </insert>
+ 
+ <!-- 删除角色，根据传入的id进行数据的删除 -->
+ <delete id="deleteRoleById" parameterType="integer">
+ 	delete from sys_role 
+ 		<where>
+ 		 id=#{0}
+ 		</where>
+ </delete>
+ <!-- 根据角色ID进行查询角色对应的资源进行删除 -->
+ 
+ <select id="findRoleResourceIdListByRoleId" parameterType="integer" resultType="java.lang.Integer">
+ 	select srr.id from 
+		sys_role sr left join 
+		sys_role_resource srr on sr.id=srr.role_id
+		where srr.role_id=#{roleId};
+ </select>
+
+ <!--根据ID查询角色信息  -->
+ <select id="findRoleById" resultMap="BaseResultMap" parameterType="integer">
+ 	select 
+ 	<include refid="Base_Column_List"></include>
+ 	 from sys_role
+ 	where id = #{id}
+ </select>
+ <!-- 使用动态sql语句进行动态的更新数据库内容
+ 	<set> 标签里面的值必须与逗号(,) 结尾
+  -->
+ <update id="updateRole" parameterType="SysRole" >
+ 	update sys_role 
+ 	<set>
+ 		<if test="roleName != null">
+ 			role_name = #{roleName},
+ 		</if>
+ 		<if test="roleDescription != null">
+			role_description = #{roleDescription},
+		</if>
+		<if test="roleStatus != null">
+			role_status = #{roleStatus},
+		</if>
+		<if test="roleSort != null">
+			role_sort = #{roleSort},
+		</if>
+ 		
+ 	</set>
+ 	where 
+ 		id = #{id}
+ </update>	
+ 
+ 
+ 
+ <!-- 根据角色的ID在资源于角色的中间表将该角色所拥有的资源进行查询 -->
+ <select id="findResourceIdListByRoleId" parameterType="integer" resultType="integer">
+ 	select srr.id as id 
+ 	from sys_role sr 
+		left join sys_role_resource  srr 
+		on
+		sr.id = srr.role_id
+		where sr.id =#{id}; 
+ </select>
+ 
+ 
+ <select id="findRoleAll" resultMap="BaseResultMap">
+ 	select
+ 	<include refid="Base_Column_List"/>
+	from sys_role
+	order by role_sort	
+ </select>
+ 
+ 
+ <insert id="inserts" parameterType="SysUserRole">
+		insert into sys_user_role (user_id, role_id)
+		values (#{userId}, #{roleId})
+	</insert>
+</mapper>

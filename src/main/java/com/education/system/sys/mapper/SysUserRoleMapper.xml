@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.SysUserRoleMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.SysUserRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, role_id
+  </sql>
+  
+  	<select id="findRoleIdListByUserId" resultType="integer" parameterType="integer">
+		select
+		role_id AS roleId
+		from sys_user_role
+		where user_id = #{userId}
+	</select>
+  
+  <select id="findUserRoleIdByUserId" parameterType="integer" resultType="integer">
+  	select
+		id
+		from sys_user_role
+		where user_id = #{userId}
+  </select>
+  
+  
+  <!-- 批量删除 -->
+	<delete id="batchDelete" parameterType="java.util.List">
+		delete from sys_user_role
+		<where>
+			id in
+			<foreach collection="list" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>
+	</delete>
+	<!-- 批量插入 -->
+	<insert id="batchInsert" parameterType="SysUserRole">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		<!-- 插入之后将id返回. -->
+		insert into sys_user_role (user_id, role_id)
+		values
+		<!-- 多行插入,使用括号逗号将不同的数据进行分隔,批量插入. -->
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.userId}, #{item.roleId})
+		</foreach>
+	</insert>
+ 
+</mapper>

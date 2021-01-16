@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.SysLogMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.SysLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="operation_name" jdbcType="VARCHAR" property="operationName" />
+    <result column="operation_class" jdbcType="VARCHAR" property="operationClass" />
+    <result column="operation_address" jdbcType="VARCHAR" property="operationAddress" />
+    <result column="operation_params" jdbcType="VARCHAR" property="operationParams" />
+    <result column="operation_ip" jdbcType="VARCHAR" property="operationIp" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, login_name, operation_name, operation_class, operation_address, operation_params, 
+    operation_ip, create_time
+  </sql>
+  
+  <!-- 查询log表 -->
+  <select id="findDataGrid" parameterType="com.education.system.sys.vo.LogVo" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from sys_log
+  	<where>
+			<if test=" condition.operationName != null and condition.operationName != '' ">
+				operation_name like '%${condition.operationName}%'
+			</if>
+			<if test="condition.startTime != null">
+        <![CDATA[
+            and create_time >= #{condition.startTime}
+         ]]>
+			</if>
+			<if test="condition.endTime != null">
+        <![CDATA[
+            and create_time <= #{condition.endTime}
+        ]]>
+			</if>
+		</where>
+		order by create_time desc
+		limit #{from}, #{size}
+	</select>
+
+<!-- 根据条件进行查询数据的总数 -->	
+  <select id="findDataGridCount" resultType="java.lang.Integer" parameterType="com.education.system.common.entity.PageInfo">
+		select count(*) count
+		from sys_log
+		<where>
+			<if test=" condition.operationName != null and condition.operationName != '' ">
+				operation_name like '%${condition.operationName}%'
+			</if>
+			<if test="condition.startTime != null">
+        <![CDATA[
+            and create_time >= #{condition.startTime}
+         ]]>
+			</if>
+			<if test="condition.endTime != null">
+        <![CDATA[
+            and create_time <= #{condition.endTime}
+        ]]>
+			</if>
+		</where>
+</select>
+
+<insert id="insert" parameterType="SysLog">
+	insert into sys_log (login_name,operation_name,operation_class,operation_address,operation_params, operation_ip, create_time)
+		values (#{loginName}, #{operationName},#{operationClass},#{operationAddress}, #{operationParams}, #{operationIp}, #{createTime})
+</insert>
+  
+  
+
+  <select id="selectById" parameterType="integer" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from sys_log
+  	where 
+  	id =#{id}
+  
+  </select>
+  
+  
+	<!--批量删除 -->
+	<delete id="batchDelete" parameterType="java.util.List">
+		delete from sys_log
+		<where>
+			id in
+			<foreach collection="list" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>
+	</delete>
+  <!-- 查询删除的数量 -->
+    <select id="delLogCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) count
+		from sys_log
+		where <![CDATA[ create_time <= #{createTime} ]]>
+	</select>
+	<!-- 根据时间删除所需要的数据 -->
+    <delete id="delByDate" parameterType="java.lang.String">
+		delete sys_log
+		where <![CDATA[ create_time <= #{createTime} ]]>
+    </delete>
+    
+    
+  
+	
+</mapper>

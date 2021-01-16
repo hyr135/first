@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.SysUserMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.SysUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+    <result column="user_phone" jdbcType="VARCHAR" property="userPhone" />
+    <result column="user_gender" jdbcType="INTEGER" property="userGender" />
+    <result column="user_age" jdbcType="INTEGER" property="userAge" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="user_state" jdbcType="INTEGER" property="userState" />
+    <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <!-- 自定义resultMap -->
+	<resultMap id="userVoResultMap" type="com.education.system.sys.vo.SysUserVo">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="login_name" jdbcType="VARCHAR" property="loginName" />
+		<result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+		<result column="user_phone" jdbcType="VARCHAR" property="userPhone" />
+		<result column="user_gender" jdbcType="INTEGER" property="userGender" />
+		<result column="user_age" jdbcType="INTEGER" property="userAge" />
+		<result column="user_type" jdbcType="INTEGER" property="userType" />
+		<result column="user_state" jdbcType="INTEGER" property="userState" />
+		<result column="org_id" jdbcType="VARCHAR" property="orgId" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+
+		<result column="org_name" property="orgName" jdbcType="VARCHAR" />
+
+		<collection property="rolesList" ofType="SysRole">
+			<id column="id" property="id" />
+			<result column="role_name" property="roleName" />
+		</collection>
+	</resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, login_name, user_password, user_phone, user_gender, user_age, user_type, 
+    user_state, org_id, create_time, update_time
+  </sql>
+  
+  <!-- 根据用户名查询所用的该用户信息 -->
+	<select id="findUserByloginName" parameterType="string" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List"/>
+		from sys_user
+		where login_name = #{0}
+	
+	</select>
+	
+	<!-- 根据用户id查询用户全部信息 -->
+	<select id="findUserById" parameterType="integer" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List"/>
+		from sys_user
+		where id = #{0}
+	</select>
+	
+	<select id="findUserVoById" resultMap="userVoResultMap" parameterType="integer">
+		SELECT
+		*
+		FROM
+		sys_user t
+		LEFT JOIN sys_user_role r ON t.id = r.user_id
+		LEFT JOIN sys_role o ON r.role_id = o.id
+		LEFT JOIN bus_org s ON s.id = t.org_id
+		<where>
+			t.id = #{id}
+		</where>
+	</select>
+	<!--用户修改是对单个表中的用户信息进行修改，如果要实现多个表修改就得去使用另个一个sql语句对另一个表进行查询 -->
+	<update id="updatePersonFile" parameterType="com.education.system.sys.entity.SysUser">
+		update sys_user 
+		<set>
+			<if test="userName!=null and userName!=''">
+				user_name=#{userName},
+			</if>
+			<if test="loginName!=null and loginName!=''">
+				login_name=#{loginName},
+			</if>
+			<if test="userGender!=null and userGender!=''">
+				user_gender=#{userGender},
+			</if>
+			<if test="userAge!=null and userAge!=''">
+				user_age=#{userAge},
+			</if>
+			<if test="userPhone!=null and userPhone!=''">
+				user_phone=#{userPhone}
+			</if>
+		</set>
+		<where>
+			id=#{id}
+		</where>
+	</update>
+		<!-- 修改密码通过用户id -->
+		<update id="updateUserPwdById">
+		update sys_user
+		set user_password = #{pwd},
+		create_time = now()
+		where id = #{userId}
+	</update>
+	
+	
+	<select id="findUserPageCondition" parameterType="PageInfo" resultMap="userVoResultMap">
+	SELECT
+		*
+		FROM
+		sys_user t
+		LEFT JOIN sys_user_role r ON t.id = r.user_id
+		LEFT JOIN sys_role o ON r.role_id = o.id
+		LEFT JOIN bus_org s ON s.id = t.org_id
+		<where>
+			<if test=" condition.userName != null and condition.userName != '' ">
+				t.user_name like '%${condition.userName}%'
+			</if>
+			<if test=" condition.orgIds != null ">
+				t.org_id in
+				<foreach collection="condition.orgIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="condition.startTime != null">
+                <![CDATA[
+                  and t.create_time >= #{condition.startTime}
+                ]]>
+			</if>
+			<if test="condition.endTime != null">
+                <![CDATA[
+                  and t.create_time <= #{condition.endTime}
+                ]]>
+			</if>
+		</where>
+		order by t.${sort} ${order}
+		LIMIT #{from}, #{size}
+	
+	</select>
+	
+	<!-- 根据前端传输过来的数值进行统计数量,用以分页处理 -->
+	<select id="findUserPageCount" resultType="java.lang.Integer" parameterType="PageInfo">
+		select count(*) count
+		from sys_user t
+		<where>
+			<if test=" condition.userName != null and condition.userName != '' ">
+				t.user_name like '%${condition.userName}%'
+			</if>
+			<if test="condition.orgIds != null ">
+				t.org_id in
+				<foreach collection="condition.orgIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="condition.startTime != null">
+                <![CDATA[
+                  and t.create_time >= #{condition.startTime}
+                ]]>
+			</if>
+			<if test="condition.endTime != null">
+                <![CDATA[
+                  and t.create_time <= #{condition.endTime}
+                ]]>
+			</if>
+		</where>
+	</select>
+	
+	<!--添加角色 s -->
+	<insert id="insert" parameterType="SysUser">
+	<!-- 这一个是返回添加的用户ID,这个用于后面对中间表数据的添加.不可或缺. -->
+		<selectKey keyProperty="id" order="AFTER" resultType="integer" >
+			SELECT LAST_INSERT_ID() 
+		</selectKey>
+		insert into sys_user ( user_name, login_name, user_password, user_phone, user_gender, user_age, user_type,user_state,org_id, create_time,
+		update_time)
+		values (#{userName}, #{loginName}, #{userPassword},
+		#{userPhone}, #{userGender}, #{userAge},
+		#{userType},#{userState},#{orgId}, now(),now())
+	</insert>
+	
+	
+	
+	<!--deleteUserById  -->
+	
+	<delete id="deleteUserById" parameterType="integer">
+		delete from sys_user
+		where id = #{id}
+	</delete>
+	
+	
+	<update id="updateUser" parameterType="SysUser">
+		<!-- 更新是使用if来做动态的sql语句 -->
+		update sys_user
+		<set>
+			<if test="loginName != null">
+				login_name = #{loginName},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName},
+			</if>
+			<if test="userPassword != null">
+				user_password = #{userPassword},
+			</if>
+			<if test="userPhone != null">
+				user_phone = #{userPhone},
+			</if>
+			<if test="userGender != null">
+				user_gender = #{userGender},
+			</if>
+			<if test="userAge != null">
+				user_age = #{userAge},
+			</if>
+			<if test="userType != null">
+				user_type = #{userType},
+			</if>
+			<if test="userState != null">
+				user_state = #{userState},
+			</if>
+			<if test="orgId != null">
+				org_id = #{orgId},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime},
+			</if>
+		</set>
+		where id = #{id}
+	
+	</update>
+</mapper>

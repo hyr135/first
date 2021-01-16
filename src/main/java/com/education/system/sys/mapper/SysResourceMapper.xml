@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.education.system.sys.mapper.SysResourceMapper">
+  <resultMap id="BaseResultMap" type="com.education.system.sys.entity.SysResource">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="resource_name" jdbcType="VARCHAR" property="resourceName" />
+    <result column="resource_url" jdbcType="VARCHAR" property="resourceUrl" />
+    <result column="resource_permission" jdbcType="VARCHAR" property="resourcePermission" />
+    <result column="resource_description" jdbcType="VARCHAR" property="resourceDescription" />
+    <result column="resource_icon" jdbcType="VARCHAR" property="resourceIcon" />
+    <result column="resource_pid" jdbcType="INTEGER" property="resourcePid" />
+    <result column="resource_sort" jdbcType="INTEGER" property="resourceSort" />
+    <result column="resource_status" jdbcType="INTEGER" property="resourceStatus" />
+    <result column="resource_type" jdbcType="INTEGER" property="resourceType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, resource_name, resource_url, resource_permission, resource_description, resource_icon, 
+    resource_pid, resource_sort, resource_status, resource_type, create_time, update_time
+  </sql>
+ 
+ 	<select id="findResourceAllByTypeAndPidNull" resultMap="BaseResultMap" parameterType="integer">
+		select distinct
+		<include refid="Base_Column_List"></include>
+		FROM
+		sys_resource
+		where resource_type =#{resourceType}
+		and resource_pid is null;
+		
+	</select>
+ 
+ 	<!-- 查询菜单资源 -->
+	<select id="findResourceAllByTypeAndPid" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from sys_resource
+		where resource_type = #{resourceType}
+		and resource_pid = #{pid} order by resource_sort
+	</select>
+	
+	<!--  -->
+	
+	<select id="findResourceAll" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List"></include>
+		FROM
+		sys_resource
+		order by resource_sort ASC
+	
+	</select>
+ 	
+ 	<!-- 对资源表插入数据，或者叫新增数据 -->
+ 	<insert id="insert" parameterType="com.education.system.sys.entity.SysResource">
+ 		<!--设置主键自增，以防数据表主键不是自动增长的情况-->
+		<!-- <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey> -->
+		
+		insert into sys_resource (resource_name, resource_url, resource_permission, resource_description, resource_icon, resource_pid, resource_sort, resource_status, resource_type, create_time,update_time)
+		values (#{resourceName}, #{resourceUrl},#{resourcePermission},
+		#{resourceDescription},#{resourceIcon}, #{resourcePid},
+		#{resourceSort}, #{resourceStatus},#{resourceType}, now(), now())
+ 	
+ 	</insert>
+ 	
+ 	<delete id="deleteResourceById" parameterType="integer">
+		delete from sys_resource
+		where id = #{id}
+	</delete>
+	
+	
+	 <!--根据资源ID查询资源表  -->
+  <select id="findResourceById" parameterType="integer" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from sys_resource
+	where id =#{id};
+  
+  </select>
+ 	
+ 	<!-- 
+  
+  	对资源表的摸一个数据进行更行,这里使用了动态sql语句进行数据的更新.
+  
+   -->
+  <update id="updateResource" parameterType="SysResource">
+		update sys_resource
+		<set>
+			<if test="resourceName != null">
+				resource_name = #{resourceName},
+			</if>
+			<if test="resourceUrl != null">
+				resource_url = #{resourceUrl},
+			</if>
+			<if test="resourcePermission != null">
+				resource_permission = #{resourcePermission},
+			</if>
+			<if test="resourceDescription != null">
+				resource_description = #{resourceDescription},
+			</if>
+			<if test="resourceDescription != null">
+				resource_description = #{resourceDescription},
+			</if>
+			resource_pid = #{resourcePid},
+			<if test="resourceSort != null">
+				resource_sort = #{resourceSort},
+			</if>
+			<if test="resourceStatus != null">
+				resource_status = #{resourceStatus},
+			</if>
+			<if test="resourceType != null">
+				resource_type = #{resourceType},
+			</if>
+			<if test="createTime != null">
+				create_time = now(),
+			</if>
+			<if test="updateTime != null">
+				update_time = now(),
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+  
+ 
+</mapper>
